@@ -1,0 +1,56 @@
+---
+title: "Project"
+author: "Fiona Zhang"
+date: "2024-02-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+install.packages("tidyverse")
+library(tidyverse)
+input=read.table("Data2share.txt",sep="\t",header=T)
+
+input <- input |>
+  mutate(ever_symp = across(starts_with("symptom")) %>% rowSums > 0,
+         ever_pos = across(starts_with("compar")) %>% rowSums(., na.rm = TRUE) > 0)
+```
+
+```{r}
+long_df <- input |>
+  select(-eligible) |>
+  pivot_longer(
+    cols = -newid, 
+    names_to = c(".value", "day"), 
+    names_pattern = "(.*)\\.(.*)"
+  ) |>
+  mutate(day = as.numeric(day))
+```
+
+```{r}
+set.seed(1)
+samp <- long_df |>
+  distinct(newid) |>
+  slice_sample(n = 1000)
+long_df |>
+  inner_join(samp, by = "newid") |>
+  inner_join(input |> select(newid, ever_symp, ever_pos), by = "newid") |>
+ggplot(aes(x = day, y = antigen_result, group = newid, color = ever_symp)) +
+  geom_line(alpha = 0.5) +
+  facet_wrap(~ever_symp)
+
+long_df |>
+  inner_join(input |> select(newid, ever_symp, ever_pos), by = "newid") |>
+  filter(ever_pos) |>
+  group_by(day, ever_symp) |>
+  summarise(m = mean(antigen_result, na.rm = TRUE)) |>
+ggplot(aes(x = day, y = m, color = ever_symp)) +
+  geom_line() +
+  facet_wrap(~ever_symp)
+ ```
+
+```{r}
+long_df |>
+  group_by(newid)
+```
+
