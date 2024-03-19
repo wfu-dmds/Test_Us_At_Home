@@ -7,7 +7,6 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-install.packages("tidyverse")
 library(tidyverse)
 input=read.table("Data2share.txt",sep="\t",header=T)
 
@@ -47,10 +46,33 @@ long_df |>
 ggplot(aes(x = day, y = m, color = ever_symp)) +
   geom_line() +
   facet_wrap(~ever_symp)
- ```
+```
 
 ```{r}
 long_df |>
   group_by(newid)
+```
+```{r}
+set.seed(1)
+samp <- long_df |>
+  distinct(newid) |>
+  slice_sample(n = 1000)
+true_data <- long_df %>%
+  inner_join(samp, by = "newid") |>
+  inner_join(input |> select(newid, ever_symp, ever_pos), by = "newid") %>%
+  filter(ever_symp == TRUE)
+model_true <- lm(antigen_result ~ day, data = true_data)
+ggplot(true_data, aes(x = day, y = antigen_result)) + 
+  geom_point() +
+  stat_smooth(method = "lm")
+
+false_data <- long_df %>%
+  inner_join(samp, by = "newid") |>
+  inner_join(input |> select(newid, ever_symp, ever_pos), by = "newid") %>%
+  filter(ever_symp == FALSE)
+model_false <- lm(antigen_result ~ day, data = false_data)
+ggplot(false_data, aes(x = day, y = antigen_result)) + 
+  geom_point() +
+  stat_smooth(method = "lm")
 ```
 
