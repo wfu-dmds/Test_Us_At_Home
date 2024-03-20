@@ -106,11 +106,16 @@ ggplot(false_data, aes(x = day, y = antigen_result)) +
 true_data <- true_data|>
   mutate(antigenyes = lag(antigen_result)) |>
   mutate(antigenbye = lag(antigenyes))
-model_yes <- lm(antigenyes ~ day + antigen_result, data = true_data)
-model_bye <- lm(antigenbye ~ day + antigenyes, data = true_data)
-model_day <- lm(day ~ antigen_result + antigenyes + antigenbye, data = true_data)
+model_yes <- lm(antigenyes ~ splines::ns(day + antigen_result, 4), data = true_data)
+true_data <- true_data|>
+  drop_na(antigenyes) |>
+  mutate(antigenyes_hat = fitted(model_yes))
+model_bye <- lm(antigenbye ~ splines::ns(day + antigenyes_hat, 4), data = true_data)
+true_data <- true_data|>
+  drop_na(antigenbye) |>
+  mutate(antigenbye_hat = fitted(model_bye))
+model_day <- lm(day ~ splines::ns(antigen_result + antigenyes_hat + antigenbye_hat, 4), data = true_data)
 true_data <- true_data |>
-  drop_na(antigenyes, antigenbye) |>
   mutate(dayhat = fitted(model_day))
 ggplot(true_data, aes(x = antigen_result, y = dayhat)) + 
   geom_point() +
