@@ -117,7 +117,7 @@ true_data <- true_data|>
 model_day <- lm(day ~ splines::ns(antigen_result + antigenyes_hat + antigenbye_hat, 4), data = true_data)
 true_data <- true_data |>
   mutate(dayhat = fitted(model_day))
-ggplot(true_data, aes(x = antigen_result, y = dayhat)) + 
+ggplot(true_data, aes(x = dayhat, y = antigen_result + antigenyes_hat + antigenbye_hat)) + 
   geom_point() +
   geom_line()
 ```
