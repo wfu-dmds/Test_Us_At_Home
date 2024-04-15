@@ -1,4 +1,7 @@
 # README
+
+Paper: https://www.medrxiv.org/content/10.1101/2022.08.05.22278466v1
+
 Our team is part of the NIH-funded Rapid Acceleration for Diagnostics (RADx) Tech Clinical Studies Core with Dr. Soni serving as co-PI of the core and study-PI of digital studies under the core. Research produced by our group and Clinical Studies Core has led to several important publications, which contributed to decision-making by federal agencies. Details of specific studies pioneered by our group are included below:
 
 * __Self-Testing for Our Protection from COVID-19__: [STOP COVID-19](https://covid19homestudies.org/stop-covid) study seeks to understand how and why people perform SARS-CoV-2 testing and report their results to the public health department. Participants participate in this study for three months and receive home-delivery of rapid antigen and PCR-collection kits if they report to be at-risk for SARS-CoV-2 infection. We also collect wearable device data from participants to understand if signals from wearable devices can help detect onset of SARS-CoV-2 infection. 
