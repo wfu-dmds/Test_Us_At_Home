@@ -52,6 +52,7 @@ ggplot(aes(x = day, y = m, color = ever_symp)) +
 long_df |>
   group_by(newid)
 ```
+
 ```{r}
 set.seed(1)
 samp <- long_df |>
@@ -61,7 +62,7 @@ samp <- long_df |>
 true_data <- long_df %>%
   inner_join(samp, by = "newid") |>
   inner_join(input |> select(newid, ever_symp, ever_pos), by = "newid") %>%
-  filter(ever_symp == TRUE)
+  filter(ever_symp == TRUE, ever_pos == TRUE)
 
 model_true <- lm(antigen_result ~ splines::ns(day, 4), data = true_data) 
 
@@ -92,7 +93,7 @@ ggplot(true_data, aes(x = day, y = antigen_result)) +
 false_data <- long_df %>%
   inner_join(samp, by = "newid") |>
   inner_join(input |> select(newid, ever_symp, ever_pos), by = "newid") %>%
-  filter(ever_symp == FALSE)
+  filter(ever_symp == FALSE, ever_pos == TRUE)
 
 model_false <- lm(antigen_result ~ splines::ns(day, 4), data = false_data) 
 
@@ -105,9 +106,9 @@ false_data |>
   labs(title = "Predicted Antigen result from day of test among symptomatic participants",
        subtitle = "Linear model with a spline")
 ```
-We can use a changepoint detection model to try to determine what we should be adding to the asymptomatic days to get them to match the shape of the symptomatic days. 
+We can use a change point detection model to try to determine what we should be adding to the asymptomatic days to get them to match the shape of the symptomatic days. 
 
-* Treat the symptomatic curve as the "truth" and then shift the asympomatic curve 0.5 days at a time to see if you can find the optimal shift ("optimal" can be defined as the shift that minimizes the MSE between the symptomatic curve and the shifted asymptomatic curve)
+* Treat the symptomatic curve as the "truth" and then shift the asymptomatic curve 0.5 days at a time to see if you can find the optimal shift ("optimal" can be defined as the shift that minimizes the MSE between the symptomatic curve and the shifted asymptomatic curve)
 
 ```{r}
 true_data <- true_data|>
