@@ -52,6 +52,7 @@ ggplot(aes(x = day, y = m, color = ever_symp)) +
 long_df |>
   group_by(newid)
 ```
+
 ```{r}
 set.seed(1)
 samp <- long_df |>
@@ -96,13 +97,92 @@ false_data <- long_df %>%
 
 model_false <- lm(antigen_result ~ splines::ns(day, 4), data = false_data) 
 
-false_data |>
+sym_data <- true_data |>
+  drop_na(antigen_result, day) |>
+  mutate(yhat = fitted(model_true))
+
+p0 <- false_data |>
   drop_na(antigen_result, day) |>
   mutate(yhat = fitted(model_false)) |>
   ggplot(aes(x = day, y = yhat)) + 
   geom_point() + 
   geom_line() + 
-  labs(title = "Predicted Antigen result from day of test among symptomatic participants",
+  geom_point(data = sym_data, aes(x = day, y = yhat), color = "cornflower blue") + 
+  geom_line(data = sym_data, aes(x = day, y = yhat), color = "cornflower blue")  +
+  labs(title = "Predicted Antigen result from day of test among symptomatic (blue) and asymptomatic (black) participations without a lag",
+       subtitle = "Linear model with a spline")
+
+p1 <- false_data |>
+  drop_na(antigen_result, day) |>
+  mutate(yhat = fitted(model_false),
+         day = day + 1) |>
+  ggplot(aes(x = day, y = yhat)) + 
+  geom_point() + 
+  geom_line() + 
+  geom_point(data = sym_data, aes(x = day, y = yhat), color = "cornflower blue") + 
+  geom_line(data = sym_data, aes(x = day, y = yhat), color = "cornflower blue")  +
+  labs(title = "Predicted Antigen result from day of test among symptomatic (blue) and asymptomatic (black) participations with a 1 day lag",
+       subtitle = "Linear model with a spline")
+
+p2 <- false_data |>
+  drop_na(antigen_result, day) |>
+  mutate(yhat = fitted(model_false),
+         day = day + 2) |>
+  ggplot(aes(x = day, y = yhat)) + 
+  geom_point() + 
+  geom_line() + 
+  geom_point(data = sym_data, aes(x = day, y = yhat), color = "cornflower blue") + 
+  geom_line(data = sym_data, aes(x = day, y = yhat), color = "cornflower blue")  +
+  labs(title = "Predicted Antigen result from day of test among symptomatic (blue) and asymptomatic (black) participations with a 2 day lag",
+       subtitle = "Linear model with a spline")
+
+p3 <- false_data |>
+  drop_na(antigen_result, day) |>
+  mutate(yhat = fitted(model_false),
+         day = day + 3) |>
+  ggplot(aes(x = day, y = yhat)) + 
+  geom_point() + 
+  geom_line() + 
+  geom_point(data = sym_data, aes(x = day, y = yhat), color = "cornflower blue") + 
+  geom_line(data = sym_data, aes(x = day, y = yhat), color = "cornflower blue")  +
+  labs(title = "Predicted Antigen result from day of test among symptomatic (blue) and asymptomatic (black) participations with a 3 day lag",
+       subtitle = "Linear model with a spline")
+
+p4 <- false_data |>
+  drop_na(antigen_result, day) |>
+  mutate(yhat = fitted(model_false),
+         day = day + 4) |>
+  ggplot(aes(x = day, y = yhat)) + 
+  geom_point() + 
+  geom_line() + 
+  geom_point(data = sym_data, aes(x = day, y = yhat), color = "cornflower blue") + 
+  geom_line(data = sym_data, aes(x = day, y = yhat), color = "cornflower blue")  +
+  labs(title = "Predicted Antigen result from day of test among symptomatic (blue) and asymptomatic (black) participations with a 4 day lag",
+       subtitle = "Linear model with a spline")
+
+
+p5 <- false_data |>
+  drop_na(antigen_result, day) |>
+  mutate(yhat = fitted(model_false),
+         day = day + 5) |>
+  ggplot(aes(x = day, y = yhat)) + 
+  geom_point() + 
+  geom_line() + 
+  geom_point(data = sym_data, aes(x = day, y = yhat), color = "cornflower blue") + 
+  geom_line(data = sym_data, aes(x = day, y = yhat), color = "cornflower blue")  +
+  labs(title = "Predicted Antigen result from day of test among symptomatic (blue) and asymptomatic (black) participations with a 5 day lag",
+       subtitle = "Linear model with a spline")
+
+p6 <- false_data |>
+  drop_na(antigen_result, day) |>
+  mutate(yhat = fitted(model_false),
+         day = day + 6) |>
+  ggplot(aes(x = day, y = yhat)) + 
+  geom_point() + 
+  geom_line() + 
+  geom_point(data = sym_data, aes(x = day, y = yhat), color = "cornflower blue") + 
+  geom_line(data = sym_data, aes(x = day, y = yhat), color = "cornflower blue")  +
+  labs(title = "Predicted Antigen result from day of test among symptomatic (blue) and asymptomatic (black) participations with a 6 day lag",
        subtitle = "Linear model with a spline")
 ```
 We can use a changepoint detection model to try to determine what we should be adding to the asymptomatic days to get them to match the shape of the symptomatic days. 
